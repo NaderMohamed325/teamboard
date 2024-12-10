@@ -13,11 +13,51 @@ html
                             p Name: #{user.name}
                             p Email: #{user.email}
                             p Age: #{user.age} years old
-                            p Phone Number: #{user.phoneNumber}
+                            p Phone Number: #{user.phoneNumber || 'N/A'}
                             p University: #{user.university}
                             p Technical Committee: #{user.technicalCommittee ? 'Yes' : 'No'}
                             p Non-Technical Committee: #{user.nonTechnicalCommittee ? 'Yes' : 'No'}
-                            button.update-button Update
-                            button.delete-button Delete
+                            br
+                            form(action=`/users/${user._id}` method='POST' onsubmit='event.preventDefault(); submitForm(this);')
+                                input(type='hidden' name='_method' value='PATCH')
+                                input(type='text' name='name' value=`${user.name}`)
+                                input(type='email' name='email' value=`${user.email}`)
+                                input(type='number' name='age' value=`${user.age}`)
+                                input(type='text' name='phoneNumber' value=`${user.phoneNumber}`)
+                                input(type='text' name='university' value=`${user.university}`)
+                                input(type='checkbox' name='technicalCommittee' checked=user.technicalCommittee)
+                                input(type='checkbox' name='nonTechnicalCommittee' checked=user.nonTechnicalCommittee)
+                                br
+                                br
+                                button(type='submit' class='update-button' onclick='setMethod(this, "PATCH")') Update
+                                br
+                                br
+                                button(type='submit' class='delete-button' onclick='setMethod(this, "DELETE")') Delete
             else
                 p No users found
+        script.
+            function setMethod(button, method) {
+                const form = button.closest('form');
+                form.querySelector('input[name="_method"]').value = method;
+            }
+
+            function submitForm(form) {
+                const method = form.querySelector('input[name="_method"]').value;
+                const formData = new FormData(form);
+                const data = {};
+                formData.forEach((value, key) => {
+                    data[key] = value;
+                });
+
+                const xhr = new XMLHttpRequest();
+                xhr.open(method, form.action, true);
+                xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+                xhr.onload = function() {
+                    if (xhr.status >= 200 && xhr.status < 400) {
+                        window.location.href = '/users';
+                    } else {
+                        console.error('Error:', xhr.responseText);
+                    }
+                };
+                xhr.send(JSON.stringify(data));
+            }
