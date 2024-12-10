@@ -1,13 +1,11 @@
 const Users = require("../models/userModel");
 
-const getAllUsers = async (req, res) =>
-{
-    try
-    {
-        const users = await Users.find();
-        res.status(200).render('DashBoard', {users});
-    } catch (err)
-    {
+const getAllUsers = async (req, res) => {
+    try {
+        const sortQuery = req.query.sort ? req.query.sort.split(',').join(' ') : '';
+        const users = await Users.find().sort(sortQuery);
+        res.status(200).render('DashBoard', { users });
+    } catch (err) {
         res.status(500).send("Error fetching users");
     }
 };
@@ -19,8 +17,11 @@ const createUser = async (req, res) =>
     {
         try
         {
+
             await Users.create(newUser);
-            const users = await Users.find();
+            let users = await Users.find();
+
+
             res.status(200).render('DashBoard', {users});
         } catch (err)
         {
