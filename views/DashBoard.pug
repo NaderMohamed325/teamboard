@@ -1,0 +1,23 @@
+doctype html
+html
+    head
+        title User Dashboard
+        link(rel='stylesheet' href='/css/style.css')
+    body
+        .container
+            h1 User Dashboard
+            if users.length
+                ul
+                    each user in users
+                        li
+                            p Name: #{user.name}
+                            p Email: #{user.email}
+                            p Age: #{user.age} years old
+                            p Phone Number: #{user.phoneNumber}
+                            p University: #{user.university}
+                            p Technical Committee: #{user.technicalCommittee ? 'Yes' : 'No'}
+                            p Non-Technical Committee: #{user.nonTechnicalCommittee ? 'Yes' : 'No'}
+                            button.update-button Update
+                            button.delete-button Delete
+            else
+                p No users found
